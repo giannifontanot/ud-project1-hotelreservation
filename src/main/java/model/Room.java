@@ -1,7 +1,8 @@
 package model;
 
 public class Room implements IRoom {
-
+    //Store and process data for an application in a Collection.
+//The collection type chosen for rooms ensures that two rooms cannot be booked at the same time.
     private String roomNumber;
     private Double price;
     private RoomType enumeration;

@@ -8,6 +8,8 @@ private String firstName;
 private String lastName;
 private String email;
 
+//Store and process data for an application in a Collection.
+
     public Customer(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;

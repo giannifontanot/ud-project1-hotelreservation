@@ -7,7 +7,11 @@ public class Reservation {
     private IRoom room;
     private Date checkinDate;
     private Date checkoutDate;
+//Store and process data for an application in a Collection.
 
+    /*
+    The Reservation class uses Date objects for check-in date and check-out date.
+     */
     public Reservation(Customer customer, IRoom room, Date checkinDate, Date checkoutDate) {
         this.customer = customer;
         this.room = room;
