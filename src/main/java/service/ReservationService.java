@@ -4,10 +4,7 @@ import model.Customer;
 import model.IRoom;
 import model.Reservation;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 //All of the service classes use static references to create singleton objects.
 
@@ -89,10 +86,22 @@ public class ReservationService {
     Find rooms using a range of dates
      */
     public Collection<IRoom> findRooms(Date checkinDate, Date checkoutDate) {
-        for (IRoom room : roomsList) {
-            //if(room.getChe)
+
+// Read All rooms and subtract the rooms that already exist in the reservations
+        Collection roomsAvailable = new HashSet<IRoom>();
+        Collection roomsReserved = new HashSet<IRoom>();
+
+        //Rooms already in reservations
+        for (Reservation reservation : reservations) {
+            roomsReserved.add(reservation.getRoom());
         }
-        return null;
+        // All rooms in the hotel
+        for (IRoom room : roomsList) {
+            roomsAvailable.add(room);
+        }
+
+        roomsList.removeAll(roomsReserved);
+        return roomsList;
     }
 
     public Collection<Reservation> getCustomersReservation(Customer customer) {
@@ -101,5 +110,14 @@ public class ReservationService {
 
     public void printAllReservation() {
 
+    }
+
+    public void addReservation(Reservation reservation) {
+        reservations.add(reservation);
+
+    }
+
+    public Collection<Reservation> getAllReservations() {
+        return reservations;
     }
 }
