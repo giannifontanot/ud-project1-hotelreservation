@@ -17,6 +17,7 @@ public class Reservation {
         this.room = room;
         this.checkinDate = checkinDate;
         this.checkoutDate = checkoutDate;
+
     }
 
     public Customer getCustomer() {
