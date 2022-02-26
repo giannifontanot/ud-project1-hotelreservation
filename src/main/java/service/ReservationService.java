@@ -79,7 +79,9 @@ public class ReservationService {
         Create new Reservation
      */
     public Reservation reserveARoom(Customer customer, IRoom room, Date checkinDate, Date checkoutDate) {
-        return new Reservation(customer, room, checkinDate, checkoutDate);
+        Reservation reservation =  new Reservation(customer, room, checkinDate, checkoutDate);
+        reservations.add(reservation);
+        return reservation;
     }
 
     /*
@@ -100,12 +102,21 @@ public class ReservationService {
             roomsAvailable.add(room);
         }
 
+        // Find out the rooms available
         roomsList.removeAll(roomsReserved);
         return roomsList;
     }
 
-    public Collection<Reservation> getCustomersReservation(Customer customer) {
-        return null;
+    public Collection<Reservation> getCustomerReservations(String customerEmail) {
+        System.out.println("reservations");
+        System.out.println(reservations);
+        Collection reservationList = new HashSet<Reservation>();
+        for(Reservation reservation:reservations){
+            if(customerEmail.equals(reservation.getCustomer().getEmail())){
+                reservationList.add(reservation);
+            }
+        }
+        return reservationList;
     }
 
     public void printAllReservation() {
