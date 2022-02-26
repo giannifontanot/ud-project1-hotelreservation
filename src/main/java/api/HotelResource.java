@@ -24,26 +24,29 @@ public class HotelResource {
         return customerServiceInstance.getCustomer(email);
     }
 
-    public void createACustomer(String email, String name, String lastName) {
-
+    public void createACustomer(String name, String lastName, String email) {
+        CustomerService.getInstance().addCustomer(name, lastName, email);
     }
 
     public IRoom getRoom(String roomNumber) {
         return null;
     }
 
-    public Reservation bookARoom(String customerEmail, IRoom room, Date checkinDate, Date checkoutDate) {
-        return null;
+    public Reservation bookARoom(Customer customer, IRoom room, Date checkinDate, Date checkoutDate) {
+
+        return ReservationService.getInstance().reserveARoom(customer, room, checkinDate, checkoutDate);
 
     }
 
-    public Collection<Reservation> getCustomersReservations(String customerEmail) {
-        return null;
+    public Collection<Reservation> getCustomerReservations(String customerEmail) {
+
+        return ReservationService.getInstance().getCustomerReservations(customerEmail);
+
     }
 
     public Collection<IRoom> findARoom(Date checkinDate, Date checkoutDate) {
 
-        return reservationServiceInstance.findRooms(checkinDate, checkoutDate);
+        return ReservationService.getInstance().findRooms(checkinDate, checkoutDate);
 
     }
 }
