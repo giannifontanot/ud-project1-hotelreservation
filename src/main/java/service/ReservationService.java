@@ -79,7 +79,7 @@ public class ReservationService {
         Create new Reservation
      */
     public Reservation reserveARoom(Customer customer, IRoom room, Date checkinDate, Date checkoutDate) {
-        Reservation reservation =  new Reservation(customer, room, checkinDate, checkoutDate);
+        Reservation reservation = new Reservation(customer, room, checkinDate, checkoutDate);
         reservations.add(reservation);
         return reservation;
     }
@@ -87,32 +87,42 @@ public class ReservationService {
     /*
     Find rooms using a range of dates
      */
-    public Collection<IRoom> findRooms(Date checkinDate, Date checkoutDate) {
+    public Collection<IRoom> findRooms(Date checkinDateWanted, Date checkoutDateWanted) {
 
 // Read All rooms and subtract the rooms that already exist in the reservations
-        Collection roomsAvailable = new HashSet<IRoom>();
-        Collection roomsReserved = new HashSet<IRoom>();
+        Collection<IRoom> roomsAlreadyReserved = new HashSet<IRoom>();
+        Collection<IRoom> roomsExistent = new HashSet<IRoom>();
 
         //Rooms already in reservations
         for (Reservation reservation : reservations) {
-            roomsReserved.add(reservation.getRoom());
+            IRoom room = reservation.getRoom();
+            Date dateIniTaken = reservation.getCheckinDate();
+            Date dateOutTaken = reservation.getCheckoutDate();
+
+            // The room is wanted on already taken dates
+            int compare1 = dateOutTaken.compareTo(checkinDateWanted);
+            int compare2 = checkoutDateWanted.compareTo(dateIniTaken);
+
+            if (compare1<0 || compare2<0) {
+                //Room is available
+            } else {
+                roomsAlreadyReserved.add(room);
+            }
         }
-        // All rooms in the hotel
+        // All rooms existent in the hotel
         for (IRoom room : roomsList) {
-            roomsAvailable.add(room);
+            roomsExistent.add(room);
         }
 
         // Find out the rooms available
-        roomsList.removeAll(roomsReserved);
-        return roomsList;
+        roomsExistent.removeAll(roomsAlreadyReserved);
+        return roomsExistent;
     }
 
     public Collection<Reservation> getCustomerReservations(String customerEmail) {
-        System.out.println("reservations");
-        System.out.println(reservations);
         Collection reservationList = new HashSet<Reservation>();
-        for(Reservation reservation:reservations){
-            if(customerEmail.equals(reservation.getCustomer().getEmail())){
+        for (Reservation reservation : reservations) {
+            if (customerEmail.equals(reservation.getCustomer().getEmail())) {
                 reservationList.add(reservation);
             }
         }
