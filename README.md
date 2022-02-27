@@ -9,25 +9,17 @@ This is a Hotel Reservation Application exercise that is written using Java. Usi
 	* [Usage](#usage)
 	* [Credits](#credits)
 	* [Features](#features)
-	* [Contributions](#contributions)
 - [🔗 Links](#---links)
 	+ [GitHub Repository](#github-repository)
-	+ [Live Link](#live-link)
 	+ [Support](#support)
 	+ [Authors](#authors)
 ## Installation
 Since the application is written using Java, a JVM is a must. Please install Java version 11 as a minimum. Aside from Java, nothing else is necessary. It is a command line application that needs very little memory or resources.
 ## Usage
 Once the application files are stores in your computer, open a BASH window and type $Java MainMenu.
+![runApp.jpg](runApp.jpg)
+![Project Structure.jpg](Project Structure.jpg)
 
-![screen1.jpg](screen1.jpg)
-## Credits
-none
- - []()
- - []()
- - []()
- - []()
- - []()
 ## Current Features
 ````````````````````````
 - Use the application as a User or as Administrator
@@ -35,6 +27,8 @@ none
 - Verifies that the user's input is correct
 - Uses color for a better user experince
 ````````````````````````
+![screen1.jpg](screen1.jpg)
+![screen2.jpg](screen2.jpg)
 ## Future Features
 ````````````````````````
 - Connect to a Database instead of using local Data Structures
@@ -46,8 +40,6 @@ In case you need them, here are some guidelines: [Contributor Covenant](https://
 # 🔗 Links
 ### GitHub Repository
 [https://github.com/giannifontanot/ud-project1-hotelreservation/](https://github.com/giannifontanot/ud-project1-hotelreservation/)
-### Live Link
-[https://giannifontanot.github.io/none](https://giannifontanot.github.io/none)
 ### Support
 If you need help with this project, please write to: [gianni.fontanot@gmail.com](https://mailto:gianni.fontanot@gmail.com)
 ### Authors
