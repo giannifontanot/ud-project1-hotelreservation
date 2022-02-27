@@ -5,29 +5,15 @@ import java.util.concurrent.TimeUnit;
 
 import api.AdminResource;
 import api.HotelResource;
-import model.Customer;
-import model.IRoom;
-import model.Reservation;
-import model.MessageColor;
-import service.CustomerService;
-import service.ReservationService;
+import model.*;
+
+import static UI.ConsoleColors.*;
+import static UI.PrintToConsole.*;
 
 public class MainMenu {
 
     // Just one scanner is used along the application
     static Scanner scanner = new Scanner(System.in).useLocale(Locale.US);
-
-    // Colors
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
-    public static final String NONE = "";
 
     // Main method
     public static void main(String[] args) throws ParseException, InterruptedException {
@@ -55,8 +41,13 @@ public class MainMenu {
             //Paint the menu
             UserMenu(gName, gLast, gEmail);
             //Capture the User Input
-            gUserOption = Integer.parseInt(scanner.nextLine());
-            //System.out.println("\n     Option Selected: " + gUserOption);
+            try {
+                gUserOption = Integer.parseInt(scanner.nextLine());
+            } catch (Exception e) {
+                gUserOption = 0;
+                PrintMessage(ANSI_RED, "Input error...", 1);
+            }
+
 
             //Verify if the user is null or not
             if (gEmail != null && gUserOption >= 3) {
@@ -68,25 +59,53 @@ public class MainMenu {
                 case 1:
                     // Verify if a user is already logged in
                     if (gEmail == null) {
-                        PrintMessage(ANSI_RED, "Please login first: Option 3", 2);
+                        PrintMessage(ANSI_YELLOW, "Please login first: Option 3", 2);
                         break;
                     }
                     // Find and reserve a room
                     PrintMessage(ANSI_YELLOW, "Reserve a Room", 1);
-                    String sdate1 = ScanMessage("To serve you best we need the following information." +
-                            "\nCheckin Date (MM-DD-YYYY):", scanner);
-                    String sdate2 = ScanMessage("Checkout Date (MM-DD-YYYY):", scanner);
-                    Date date1 = new SimpleDateFormat("MM-dd-yyyy").parse(sdate1);
-                    Date date2 = new SimpleDateFormat("MM-dd-yyyy").parse(sdate2);
-                    System.out.println(date1);
+
+                    boolean error1Parsed = true;
+                    boolean error2Parsed = true;
+                    Date date1 = null;
+                    Date date2 = null;
+                    do {
+                        try {
+                            String sdate1 = ScanMessage("To serve you best we need the following information:" +
+                                    "\nCheck In Date (MM-DD-YYYY):", scanner);
+                            date1 = new SimpleDateFormat("MM-dd-yyyy").parse(sdate1);
+                            error1Parsed = false;
+                        } catch (Exception e) {
+                            PrintMessage(ANSI_RED, "Error When Reading the Date", 1);
+                            error1Parsed = true;
+                        }
+                    } while (error1Parsed);
+
+                    do {
+                        try {
+                            String sdate2 = ScanMessage("Check Out Date (MM-DD-YYYY):", scanner);
+                            date2 = new SimpleDateFormat("MM-dd-yyyy").parse(sdate2);
+                            error2Parsed = false;
+                        } catch (Exception e) {
+                            PrintMessage(ANSI_RED, "Error When Reading the Date", 1);
+                            error2Parsed = true;
+                        }
+                    } while (error2Parsed);
 
                     Customer customer = hotelresource.getCustomer(gEmail);
-                    System.out.println("gEmail: " + gEmail);
-
-                    System.out.println("customer: " + customer);
                     Collection<IRoom> availableRooms = hotelresource.findARoom(date1, date2);
                     ParseRooms(availableRooms);
-                    String roomSelected = ScanMessage("What room do you want to reserve?", scanner);
+                    String roomSelected = "";
+                    boolean errorListParsed = true;
+                    do {
+                        roomSelected = ScanMessage("Select a room from the previous list.", scanner);
+                        if(findRoomInList(roomSelected,availableRooms)) {
+                            errorListParsed = false;
+                        } else {
+                            PrintMessage(ANSI_RED, "Please type the Room Number as in the list", 1);
+                            errorListParsed = true;
+                        }
+                    } while (errorListParsed);
 
                     for (IRoom room : availableRooms) {
                         if (room.getRoomNumber().equals(roomSelected)) {
@@ -97,12 +116,11 @@ public class MainMenu {
                         }
                     }
 
-
                     break;
                 case 2:
                     // Verify if a user is already logged in
                     if (gEmail == null) {
-                        PrintMessage(ANSI_RED, "Please login first: Option 3", 2);
+                        PrintMessage(ANSI_YELLOW, "Please login first: Option 3", 2);
                         break;
                     }
                     // See my Reservations
@@ -143,7 +161,16 @@ public class MainMenu {
                     int adminOption = 7;
                     do {
                         AdminMenu();
-                        adminOption = Integer.parseInt(ScanMessage("Select one option:", scanner));
+
+                        //Capture the User Input
+                        try {
+                            adminOption = Integer.parseInt(ScanMessage("Select one option:", scanner));
+                        } catch (Exception e) {
+                            adminOption = 0;
+                            PrintMessage(ANSI_RED, "Input error...", 1);
+                        }
+
+
                         System.out.println("\n     Option Selected: " + adminOption);
                         switch (adminOption) {
                             case 1:
@@ -158,21 +185,82 @@ public class MainMenu {
                                 break;
                             case 2:
                                 // See All Customers
-                                PrintMessage(ANSI_YELLOW, "Admin: See All Customer", 1);
+                                PrintMessage(ANSI_YELLOW, "Admin: See All Customers", 1);
                                 Collection<Customer> customersList = adminresource.getAllCustomers();
                                 ParseCustomers(customersList);
                                 break;
                             case 3:
+
                                 // Add a Room
                                 PrintMessage(ANSI_YELLOW, "Admin: Add a Room", 1);
+                                String roomnumber = ScanMessage("Room number:", scanner);
+
+                                String roomtype = "";
+                                boolean errorTypeParsed = true;
+                                do {
+                                        roomtype = ScanMessage("Room Type: (S)ingle or (D)ouble", scanner);
+                                    if(roomtype.equals("S") || roomtype.equals("D")) {
+
+                                        errorTypeParsed = false;
+                                    } else {
+                                        PrintMessage(ANSI_RED, "Error When Reading the Room Type", 1);
+                                        errorTypeParsed = true;
+                                    }
+                                } while (errorTypeParsed);
+
+                                String roompay = "";
+                                boolean errorPayParsed = true;
+                                do {
+                                    roompay = ScanMessage("Room Price: (F)ree or (P)ay", scanner);
+                                    if(roompay.equals("F") || roompay.equals("P")) {
+                                        errorPayParsed = false;
+                                    } else {
+                                        PrintMessage(ANSI_RED, "Error When Reading the Room Price", 1);
+                                        errorPayParsed = true;
+                                    }
+                                } while (errorPayParsed);
+
+                                String roomprice = "0";
+                                Double dRoomprice = 0.00;
+                                boolean errorPriceParsed = true;
+                                if(roompay.equals("P")) {
+                                    do {
+                                        try {
+                                            roomprice= ScanMessage("Cost:", scanner);
+                                            dRoomprice =  Double.parseDouble(roomprice);
+                                            errorPriceParsed = false;
+                                        } catch (Exception e) {
+                                            PrintMessage(ANSI_RED, "Error When Reading the Cost", 1);
+                                            errorPriceParsed = true;
+                                        }
+                                    } while (errorPriceParsed);
+                                }
+
+                                //When the room is free, then we use a different constructor
+                                IRoom newRoom = null;
+                                if(roompay.equals("F")) {
+                                    newRoom = new FreeRoom(roomnumber, (roomtype.equals("S") ? RoomType.SINGLE : RoomType.DOUBLE));
+                                }else{
+                                    newRoom = new Room(roomnumber, dRoomprice, (roomtype.equals("S") ? RoomType.SINGLE : RoomType.DOUBLE));
+                                }
+                                adminresource.addRoom(newRoom);
+                                ParseRoom(newRoom);
                                 break;
                             case 4:
                                 // See All Rooms
                                 PrintMessage(ANSI_YELLOW, "Admin: See All Rooms", 1);
+                                Collection<IRoom> roomsList = adminresource.getAllRooms();
+                                ParseRooms(roomsList);
+                                TimeUnit.SECONDS.sleep(1);
+                                PrintMessage(ANSI_YELLOW, "Back to Admin Menu", 2);
                                 break;
                             case 5:
                                 // See All Reservations
                                 PrintMessage(ANSI_YELLOW, "Admin: See All Reservations", 1);
+                                Collection<Reservation> reservationList1 = adminresource.displayAllReservations();
+                                ParseAllReservations(reservationList1);
+                                TimeUnit.SECONDS.sleep(1);
+                                PrintMessage(ANSI_YELLOW, "Back to Admin Menu", 2);
                                 break;
                             case 6:
                                 // Back to main menu
@@ -187,171 +275,15 @@ public class MainMenu {
                     PrintMessage(ANSI_YELLOW, "Good to see you here. Bye!", 2);
                     break;
             }
-
-//            if(gUserOption!=3 && gUserOption!=6) {
-//                PrintMessage(ANSI_YELLOW,"Press Any Key to Continue or 5 to Exit");
-//                gUserOption = Integer.parseInt(ScanMessage("", scanner));
-//            }
         } while (gUserOption <= 4);
     }
 
-
-
-    static void PrintMessage(String color, String message, int sleep) throws InterruptedException {
-        String sEnd = "";
-        if (color.equals("NONE")) {
-            sEnd = "";
-        } else {
-            sEnd = ANSI_RESET;
-        }
-
-        System.out.println(ANSI_YELLOW + " -----------------------------" + ANSI_RESET);
-        System.out.println("  " + color + message + sEnd);
-        System.out.println(ANSI_YELLOW + " -----------------------------" + ANSI_RESET);
-        TimeUnit.SECONDS.sleep(sleep);
-    }
-
-    static String ScanMessage(String message, Scanner scanner1) {
-        System.out.println(message);
-        return scanner1.nextLine();
-    }
-
-    static void UserMenu(String gName, String gLast, String gEmail) {
-
-        int counter = 0;
-        System.out.print("\033[H\033[2J");
-
-        System.out.println(" **************************************");
-        System.out.println("     Hotel Reservation Application");
-        System.out.println(" **************************************");
-        if (gEmail != null) {
-            System.out.println("          * Welcome " + ANSI_BLUE + gName + ANSI_RESET + "! *");
-            System.out.println(" **************************************");
-        }
-        System.out.println("     " + (++counter) + ") Find and Reserve a Room");
-        System.out.println("     " + (++counter) + ") See my Reservations");
-        if (gEmail == null) {
-            System.out.println("     " + (++counter) + ") Login / Create an Account");
-        }
-        System.out.println("     " + (++counter) + ") Admin");
-        System.out.println("     " + (++counter) + ") Exit");
-        System.out.println("\n     Select an Option from the Menu...");
-    }
-
-    static void AdminMenu() {
-
-        System.out.println("1. See One Customer");
-        System.out.println("2. See All Customers");
-        System.out.println("3. Add a Room");
-        System.out.println("4. See All Rooms");
-        System.out.println("5. See All Reservations");
-        System.out.println("6. Back to Main Menu");
-    }
-
-    public static void ParseRooms(Collection<IRoom> rooms) {
-        for (IRoom room : rooms) {
-            System.out.println("╔═══════════════════════════════════╗");
-            System.out.println("║ Room Number: " + ANSI_RED + room.getRoomNumber() + ANSI_RESET + "\t Type: " + room.getRoomType() + "\t║");
-            System.out.println("║ Price:\t$" + room.getRoomPrice() + "\t\t\t\t\t║");
-            System.out.println("╚═══════════════════════════════════╝");
-        }
-    }
-
-    private static void ParseCustomers(Collection<Customer> customersList) throws InterruptedException {
-
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-        int counter = 1;
-        System.out.println(ANSI_YELLOW + "╔═══════════════════════════════════════════════════╗" + ANSI_RESET);
-        System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-        System.out.println(ANSI_YELLOW + "║                  CUSTOMER LIST                    ║" + ANSI_RESET);
-        System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-
-
-            for (Customer customer : customersList) {
-                System.out.println(ANSI_YELLOW + "║   --------------  CUSTOMER " + (counter++) + "  " +
-                        "------------------  " +
-                        "║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Customer name: " + ANSI_BLUE + customer.getFirstName() + " " + customer.getLastName() + ANSI_RESET + ANSI_YELLOW + fillSpaces(18,customer.getFirstName().length()+ customer.getLastName().length())+  "║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " email: " + ANSI_BLUE + customer.getEmail() + ANSI_RESET + ANSI_YELLOW + fillSpaces(9,customer.getEmail().length())+"║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
+    private static boolean findRoomInList(String roomSelected, Collection<IRoom> availableRooms){
+        for(IRoom room:availableRooms){
+            if(roomSelected.equals(room.getRoomNumber())){
+                return true;
             }
-
-        System.out.println(ANSI_YELLOW + "╚═══════════════════════════════════════════════════╝" + ANSI_RESET);
-        TimeUnit.SECONDS.sleep(1);
-        PrintMessage(ANSI_YELLOW,"Back to Admin Menu",2);
-    }
-
-
-    public static void ParseReservations(Collection<Reservation> reservationsList) throws InterruptedException, ParseException {
-        for (Reservation reservation : reservationsList) {
-
-            Customer customer = reservation.getCustomer();
-            IRoom room = reservation.getRoom();
-
-            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-
-
-            System.out.println(ANSI_YELLOW + "╔═══════════════════════════════════════════════════╗" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║            YOUR RESERVATION DETAILS               ║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Customer name: " + ANSI_BLUE + customer.getFirstName() + " " + customer.getLastName() + ANSI_RESET + ANSI_YELLOW + fillSpaces(18,customer.getFirstName().length()+ customer.getLastName().length())+  "║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " email: " + ANSI_BLUE + customer.getEmail() + ANSI_RESET + ANSI_YELLOW + fillSpaces(9,customer.getEmail().length())+"║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Check In: " + ANSI_GREEN + sdf.format(reservation.getCheckinDate()) + ANSI_RESET + "\t\tCheck Out: " + ANSI_GREEN + sdf.format(reservation.getCheckoutDate()) + ANSI_RESET + "  " + ANSI_YELLOW + " ║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║                                                   " + ANSI_YELLOW + "║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Room: " + ANSI_RED + room.getRoomNumber() + ANSI_RESET +
-                    "\t Type: " + ANSI_CYAN + room.getRoomType() + ANSI_RESET + "  \t Price: " + ANSI_PURPLE + room.getRoomPrice() + ANSI_RESET +
-                    ANSI_YELLOW + "       ║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║       ** Thank you for booking with us **         ║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "╚═══════════════════════════════════════════════════╝" + ANSI_RESET);
-            TimeUnit.SECONDS.sleep(1);
         }
-    }
-
-    public static void ParseCustomer(Customer customer, Collection<Reservation> reservationList) throws InterruptedException {
-
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-        int counter = 1;
-        System.out.println(ANSI_YELLOW + "╔═══════════════════════════════════════════════════╗" + ANSI_RESET);
-        System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-        System.out.println(ANSI_YELLOW + "║                  CUSTOMER DATA                    ║" + ANSI_RESET);
-        System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-        System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Customer name: " + ANSI_BLUE + customer.getFirstName() + " " + customer.getLastName() + ANSI_RESET + ANSI_YELLOW + fillSpaces(18,customer.getFirstName().length()+ customer.getLastName().length())+  "║" + ANSI_RESET);
-        System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " email: " + ANSI_BLUE + customer.getEmail() + ANSI_RESET + ANSI_YELLOW + fillSpaces(9,customer.getEmail().length())+"║" + ANSI_RESET);
-        System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-
-        if(reservationList.size() > 0) {
-            for (Reservation reservation : reservationList) {
-                IRoom room = reservation.getRoom();
-                System.out.println(ANSI_YELLOW + "║  ---------------  RESERVATION " + (counter++) + "  ---------------  " +
-                        "║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Check In: " + ANSI_GREEN + sdf.format(reservation.getCheckinDate()) + ANSI_RESET + "\t\tCheck Out: " + ANSI_GREEN + sdf.format(reservation.getCheckoutDate()) + ANSI_RESET + "  " + ANSI_YELLOW + " ║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║                                                   " + ANSI_YELLOW + "║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Room: " + ANSI_RED + room.getRoomNumber() + ANSI_RESET +
-                        "\t Type: " + ANSI_CYAN + room.getRoomType() + ANSI_RESET + "  \t Price: " + ANSI_PURPLE + room.getRoomPrice() + ANSI_RESET +
-                        ANSI_YELLOW + "       ║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-
-            }
-        }else{
-                System.out.println(ANSI_YELLOW + "║        ------- No Reservations Yet --------       ║" + ANSI_RESET);
-                System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
-
-        }
-        System.out.println(ANSI_YELLOW + "╚═══════════════════════════════════════════════════╝" + ANSI_RESET);
-        TimeUnit.SECONDS.sleep(1);
-        PrintMessage(ANSI_YELLOW,"Back to Admin Menu",2);
-    }
-
-    public static StringBuilder fillSpaces(int used,int stringLength){
-        StringBuilder space = new StringBuilder(" ");
-        for(int i=0;i<50-(used+stringLength);i++){
-            space.append(" ");
-        }
-        return space;
+        return false;
     }
 }
