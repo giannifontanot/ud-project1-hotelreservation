@@ -12,9 +12,9 @@ public class Seeds {
     }
 
     public void seedData() throws ParseException {
-        CustomerService.getInstance().addCustomer("Hugo", "Perez", "hp@gmail.com");
-        CustomerService.getInstance().addCustomer("Paco", "Lopez", "pl@gmail.com");
-        CustomerService.getInstance().addCustomer("Luis", "Martinez", "lm@gmail.com");
+        CustomerService.getInstance().addCustomer("Michael", "Phillips", "mp@gmail.com");
+        CustomerService.getInstance().addCustomer("John", "Thompson", "jt@gmail.com");
+        CustomerService.getInstance().addCustomer("Mark", "Richards", "mr@gmail.com");
 
         IRoom Room001 = new Room("001", 120.99, RoomType.SINGLE);
         IRoom Room002 = new Room("002", 149.90, RoomType.DOUBLE);
@@ -35,7 +35,7 @@ public class Seeds {
         Date date2 = new SimpleDateFormat("mm-dd-yyyy").parse("01-10-2022");
         Date date3 = new SimpleDateFormat("mm-dd-yyyy").parse("01-20-2022");
         Date date4 = new SimpleDateFormat("mm-dd-yyyy").parse("01-31-2022");
-        Customer customer1 = CustomerService.getInstance().getCustomer("hp@gmail.com");
+        Customer customer1 = CustomerService.getInstance().getCustomer("mr@gmail.com");
         IRoom Room1 = ReservationService.getInstance().getARoom("001");
         IRoom Room2 = ReservationService.getInstance().getARoom("002");
         Reservation reservation1 = ReservationService.getInstance().reserveARoom(customer1, Room1, date1, date2);
