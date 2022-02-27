@@ -17,7 +17,7 @@ This is a Hotel Reservation Application exercise that is written using Java. Usi
 Since the application is written using Java, a JVM is a must. Please install Java version 11 as a minimum. Aside from Java, nothing else is necessary. It is a command line application that needs very little memory or resources.
 ## Usage
 Once the application files are stores in your computer, open a BASH window and type $Java MainMenu.
-![runApp.jpg](runApp.jpg)
+![runApp.JPG](runApp.JPG)
 ![Project Structure.jpg](Project Structure.jpg)
 
 ## Current Features
