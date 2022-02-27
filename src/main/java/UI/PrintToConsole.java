@@ -139,7 +139,7 @@ public class PrintToConsole {
             System.out.println(ANSI_YELLOW + "║                                                   " + ANSI_YELLOW + "║" + ANSI_RESET);
             System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Room: " + ANSI_RED + room.getRoomNumber() + ANSI_RESET +
                     "\t Type: " + ANSI_CYAN + room.getRoomType() + ANSI_RESET + "  \t Price: " + ANSI_PURPLE + formatter.format(room.getRoomPrice()) + ANSI_RESET +
-                    ANSI_YELLOW + "       ║" + ANSI_RESET);
+                    ANSI_YELLOW + "      ║" + ANSI_RESET);
             System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
             System.out.println(ANSI_YELLOW + "║       ** Thank you for booking with us **         ║" + ANSI_RESET);
             System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
@@ -169,7 +169,7 @@ public class PrintToConsole {
             System.out.println(ANSI_YELLOW + "║                                                   " + ANSI_YELLOW + "║" + ANSI_RESET);
             System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Room: " + ANSI_RED + room.getRoomNumber() + ANSI_RESET +
                     "\t Type: " + ANSI_CYAN + room.getRoomType() + ANSI_RESET + "  \t Price: " + ANSI_PURPLE + formatter.format(room.getRoomPrice()) + ANSI_RESET +
-                    ANSI_YELLOW + "       ║" + ANSI_RESET);
+                    ANSI_YELLOW + "      ║" + ANSI_RESET);
             System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
         }
         System.out.println(ANSI_YELLOW + "╚═══════════════════════════════════════════════════╝" + ANSI_RESET);
@@ -198,7 +198,7 @@ public class PrintToConsole {
                 System.out.println(ANSI_YELLOW + "║                                                   " + ANSI_YELLOW + "║" + ANSI_RESET);
                 System.out.println(ANSI_YELLOW + "║ " + ANSI_RESET + " Room: " + ANSI_RED + room.getRoomNumber() + ANSI_RESET +
                         "\t Type: " + ANSI_CYAN + room.getRoomType() + ANSI_RESET + "  \t Price: " + ANSI_PURPLE + formatter.format(room.getRoomPrice()) + ANSI_RESET +
-                        ANSI_YELLOW + "       ║" + ANSI_RESET);
+                        ANSI_YELLOW + "      ║" + ANSI_RESET);
                 System.out.println(ANSI_YELLOW + "║                                                   ║" + ANSI_RESET);
 
             }
