@@ -44,9 +44,10 @@ public class Tester {
 ////        System.out.println(ReservationService.getInstance().getAllReservations());
 //
 //        ParseRooms(availableRooms);
-        System.out.println("Reservations: ");
-        ParseReservations(ReservationService.getInstance().getCustomerReservations("hp@gmail.com"));
+//        System.out.println("Reservations: ");
+//        ParseReservations(ReservationService.getInstance().getCustomerReservations("hp@gmail.com"));
 
+        //ReservationService.getInstance().findRooms());
     }
 
     public static void ParseRooms(Collection<IRoom> rooms) {
