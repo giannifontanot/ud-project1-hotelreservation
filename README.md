@@ -18,7 +18,7 @@ Since the application is written using Java, a JVM is a must. Please install Jav
 ## Usage
 Once the application files are stores in your computer, open a BASH window and type $Java MainMenu.
 ![runApp.JPG](runApp.JPG)
-![Project Structure.jpg](Project Structure.jpg)
+![Project Structure.JPG](Project Structure.JPG)
 
 ## Current Features
 ````````````````````````
@@ -27,8 +27,8 @@ Once the application files are stores in your computer, open a BASH window and t
 - Verifies that the user's input is correct
 - Uses color for a better user experince
 ````````````````````````
-![screen1.jpg](screen1.jpg)
-![screen2.jpg](screen2.jpg)
+![screen1.JPG](screen1.JPG)
+![screen2.JPG](screen2.JPG)
 ## Future Features
 ````````````````````````
 - Connect to a Database instead of using local Data Structures
