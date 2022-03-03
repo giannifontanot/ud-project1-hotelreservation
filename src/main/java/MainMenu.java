@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import api.AdminResource;
 import api.HotelResource;
 import model.*;
+import util.Tools;
 
 import static UI.ConsoleColors.*;
 import static UI.PrintToConsole.*;
@@ -92,14 +93,47 @@ public class MainMenu {
                         }
                     } while (error2Parsed);
 
+                    boolean errorDateTaken = true;
+                    Collection<IRoom> availableRooms = null;
                     Customer customer = hotelresource.getCustomer(gEmail);
-                    Collection<IRoom> availableRooms = hotelresource.findARoom(date1, date2);
+                    int daycounter = 1;
+                    do {
+                        availableRooms = hotelresource.findARoom(date1, date2);
+                             System.out.println("Available Rooms : "+availableRooms.size());
+                        if (availableRooms.size() == 0) {
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(date1);
+                            cal.add(Calendar.DATE,7);
+                            date1 = cal.getTime();
+
+                            cal.setTime(date2);
+                            cal.add(Calendar.DATE,7);
+                            date2 = cal.getTime();
+                            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+                            PrintMessage(ANSI_GREEN, ANSI_RESET + ANSI_RED + "UUUps! We have no availability on those" +
+                                    " " +
+                                    "dates." + ANSI_RESET + ANSI_GREEN +
+                                    " " +
+                                    "\n We " +
+                                    "can offer " +
+                                    "you a room using this new dates, "+ANSI_RESET + ANSI_RED+(daycounter*7)+" days " + ANSI_RESET + ANSI_GREEN +
+                                    "ahead:\n Check In: "+
+                                    sdf.format(date1) +
+                                    ", Check Out: "+
+                                    sdf.format(date2), 2);
+                            errorDateTaken = true;
+                            daycounter++;
+                        }else{
+                            errorDateTaken = false;
+                        }
+                    } while (errorDateTaken);
+
                     ParseRooms(availableRooms);
                     String roomSelected = "";
                     boolean errorListParsed = true;
                     do {
                         roomSelected = ScanMessage("Select a room from the previous list.", scanner);
-                        if(findRoomInList(roomSelected,availableRooms)) {
+                        if (findRoomInList(roomSelected, availableRooms)) {
                             errorListParsed = false;
                         } else {
                             PrintMessage(ANSI_RED, "Please type the Room Number as in the list", 1);
@@ -135,12 +169,47 @@ public class MainMenu {
 
                     // Create an Account
                     PrintMessage(ANSI_YELLOW, "3 - Login / Create an Account", 1);
-                    String email = ScanMessage("Please type your email:", scanner);
+
+                    String email = "";
+                    boolean errorEmailParsed = true;
+                    do {
+                        email = ScanMessage("Please type your email:", scanner);
+                        if (Tools.VerifyEmail(email)) {
+                            errorEmailParsed = false;
+                        } else {
+                            PrintMessage(ANSI_RED, "Please verify that the email is correct", 1);
+                            errorEmailParsed = true;
+                        }
+                    } while (errorEmailParsed);
+
+
                     Customer customerFound = hotelresource.getCustomer(email);
                     if (customerFound == null) {
 
-                        String name = ScanMessage("Your email does not exist in our database. \nPlease write your name:", scanner);
-                        String last = ScanMessage("Please write your Last Name:", scanner);
+                        String name = "";
+                        boolean errorNameParsed = true;
+                        do {
+                            name = ScanMessage("Your email does not exist in our database. \nPlease write your name:", scanner);
+                            if (!name.equals("")) {
+                                errorNameParsed = false;
+                            } else {
+                                PrintMessage(ANSI_RED, "This field cannot be empty", 1);
+                                errorNameParsed = true;
+                            }
+                        } while (errorNameParsed);
+
+
+                        String last = "";
+                        boolean errorLastParsed = true;
+                        do {
+                            last = ScanMessage("Please write your Last Name:", scanner);
+                            if (!last.equals("")) {
+                                errorLastParsed = false;
+                            } else {
+                                PrintMessage(ANSI_RED, "This field cannot be empty", 1);
+                                errorLastParsed = true;
+                            }
+                        } while (errorLastParsed);
 
                         hotelresource.createACustomer(name, last, email);
 
@@ -193,13 +262,32 @@ public class MainMenu {
 
                                 // Add a Room
                                 PrintMessage(ANSI_YELLOW, "Admin: Add a Room", 1);
-                                String roomnumber = ScanMessage("Room number:", scanner);
+
+                                String roomnumber = "";
+                                Collection<IRoom> roomsExistentList = null;
+                                boolean errorRoomSelected = true;
+                                roomsExistentList = adminresource.getAllRooms();
+                                Collection<String> roomsTaken = new ArrayList<String>();
+
+                                for (IRoom room : roomsExistentList) {
+                                    roomsTaken.add(room.getRoomNumber());
+                                }
+                                do {
+                                    roomnumber = ScanMessage("Room number:", scanner);
+                                    if (roomsTaken.contains(roomnumber)) {
+                                        PrintMessage(ANSI_RED, "Room number existent, please use a diferent number", 1);
+                                        errorRoomSelected = true;
+                                    } else {
+                                        errorRoomSelected = false;
+                                    }
+                                } while (errorRoomSelected);
+
 
                                 String roomtype = "";
                                 boolean errorTypeParsed = true;
                                 do {
-                                        roomtype = ScanMessage("Room Type: (S)ingle or (D)ouble", scanner);
-                                    if(roomtype.equals("S") || roomtype.equals("D")) {
+                                    roomtype = ScanMessage("Room Type: (S)ingle or (D)ouble", scanner);
+                                    if (roomtype.equals("S") || roomtype.equals("D")) {
 
                                         errorTypeParsed = false;
                                     } else {
@@ -212,7 +300,7 @@ public class MainMenu {
                                 boolean errorPayParsed = true;
                                 do {
                                     roompay = ScanMessage("Room Price: (F)ree or (P)ay", scanner);
-                                    if(roompay.equals("F") || roompay.equals("P")) {
+                                    if (roompay.equals("F") || roompay.equals("P")) {
                                         errorPayParsed = false;
                                     } else {
                                         PrintMessage(ANSI_RED, "Error When Reading the Room Price", 1);
@@ -223,11 +311,11 @@ public class MainMenu {
                                 String roomprice = "0";
                                 Double dRoomprice = 0.00;
                                 boolean errorPriceParsed = true;
-                                if(roompay.equals("P")) {
+                                if (roompay.equals("P")) {
                                     do {
                                         try {
-                                            roomprice= ScanMessage("Cost:", scanner);
-                                            dRoomprice =  Double.parseDouble(roomprice);
+                                            roomprice = ScanMessage("Cost:", scanner);
+                                            dRoomprice = Double.parseDouble(roomprice);
                                             errorPriceParsed = false;
                                         } catch (Exception e) {
                                             PrintMessage(ANSI_RED, "Error When Reading the Cost", 1);
@@ -238,9 +326,9 @@ public class MainMenu {
 
                                 //When the room is free, then we use a different constructor
                                 IRoom newRoom = null;
-                                if(roompay.equals("F")) {
+                                if (roompay.equals("F")) {
                                     newRoom = new FreeRoom(roomnumber, (roomtype.equals("S") ? RoomType.SINGLE : RoomType.DOUBLE));
-                                }else{
+                                } else {
                                     newRoom = new Room(roomnumber, dRoomprice, (roomtype.equals("S") ? RoomType.SINGLE : RoomType.DOUBLE));
                                 }
                                 adminresource.addRoom(newRoom);
@@ -278,9 +366,9 @@ public class MainMenu {
         } while (gUserOption <= 4);
     }
 
-    private static boolean findRoomInList(String roomSelected, Collection<IRoom> availableRooms){
-        for(IRoom room:availableRooms){
-            if(roomSelected.equals(room.getRoomNumber())){
+    private static boolean findRoomInList(String roomSelected, Collection<IRoom> availableRooms) {
+        for (IRoom room : availableRooms) {
+            if (roomSelected.equals(room.getRoomNumber())) {
                 return true;
             }
         }

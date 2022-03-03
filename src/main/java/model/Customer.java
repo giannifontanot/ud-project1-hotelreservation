@@ -1,8 +1,7 @@
 package model;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import util.Tools;
 public class Customer {
 private String firstName;
 private String lastName;
@@ -14,19 +13,7 @@ private String email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-
-        //Verify email using a regex
-        Pattern emailPattern = Pattern.compile("^(.+)@(.+)com$");
-        Matcher matcher = emailPattern.matcher(email);
-
-        try {
-            if (!matcher.find()) {
-                throw new IllegalArgumentException("Email address is not valid");
-            }
-
-        }catch(Exception e) {
-            System.out.println(e.getMessage());
-        }
+        Tools.VerifyEmail(email);
 
     }
 

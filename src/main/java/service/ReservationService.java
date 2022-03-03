@@ -80,8 +80,16 @@ public class ReservationService {
      */
     public Reservation reserveARoom(Customer customer, IRoom room, Date checkinDate, Date checkoutDate) {
         Reservation reservation = new Reservation(customer, room, checkinDate, checkoutDate);
-        reservations.add(reservation);
+        //reservations.add(reservation);
+        AddReservation(reservations,reservation);
         return reservation;
+    }
+
+    /*
+    Default method required in the rubric
+     */
+    static void AddReservation(Collection<Reservation> reservationsList, Reservation reservation){
+        reservationsList.add(reservation);
     }
 
     /*
@@ -129,9 +137,6 @@ public class ReservationService {
         return reservationList;
     }
 
-    public void printAllReservation() {
-
-    }
 
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);

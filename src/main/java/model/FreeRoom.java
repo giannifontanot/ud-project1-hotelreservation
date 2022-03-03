@@ -3,6 +3,7 @@ package model;
 public class FreeRoom extends Room{
     private String roomNumber;
     private RoomType enumeration;
+    final Double freeCost = 0.0;
 
     public FreeRoom(String roomNumber, RoomType enumeration) {
         super(roomNumber, 0.00, enumeration);
@@ -14,7 +15,7 @@ public class FreeRoom extends Room{
     public String toString() {
         return "FreeRoom{" +
                 "roomNumber='" + roomNumber + '\'' +
-                ", price=" + 0.00 +
+                ", price=" + freeCost +
                 ", enumeration=" + enumeration +
                 '}';
     }
